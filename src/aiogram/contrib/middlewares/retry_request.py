@@ -17,7 +17,7 @@ from aiogram.methods import AnswerCallbackQuery, Response, TelegramMethod
 from aiogram.methods.base import TelegramType
 from aiogram.utils.backoff import Backoff, BackoffConfig
 
-from aiogram.contrib.const import DEFAULT_MAX_RETRIES
+from ..const import DEFAULT_MAX_RETRIES
 
 logger: logging.Logger = logging.getLogger(__name__)
 
@@ -62,14 +62,14 @@ class RetryRequestMiddleware(BaseRequestMiddleware):
                 backoff.reset()
                 await asyncio.sleep(e.retry_after)
 
-            except (TelegramServerError, RestartingTelegram, TelegramNetworkError) as e:
+            except (TelegramServerError, RestartingTelegram, TelegramNetworkError) as error:
                 if retries == self.max_retries:
                     raise
                 logger.error(
                     "Request '%s' failed due to %s - %s. Sleeping %s seconds.",
                     type(method).__name__,
-                    type(e).__name__,
-                    e,
+                    type(error).__name__,
+                    error,
                     backoff.next_delay,
                 )
                 await backoff.asleep()
