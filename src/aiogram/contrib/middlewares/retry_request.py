@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from typing import Any
 
 from aiogram import Bot
 from aiogram.client.session.middlewares.base import (
@@ -25,7 +26,7 @@ logger: logging.Logger = logging.getLogger(__name__)
 class RetryRequestMiddleware(BaseRequestMiddleware):
     backoff_config: BackoffConfig
     max_retries: int
-    exclude_methods: tuple[type[TelegramMethod]]
+    exclude_methods: tuple[type[TelegramMethod[Any]]]
 
     __slots__ = ("backoff_config", "max_retries", "exclude_methods")
 
@@ -33,7 +34,7 @@ class RetryRequestMiddleware(BaseRequestMiddleware):
         self,
         backoff_config: BackoffConfig = DEFAULT_BACKOFF_CONFIG,
         max_retries: int = DEFAULT_MAX_RETRIES,
-        exclude_methods: tuple[type[TelegramMethod]] = (AnswerCallbackQuery,),
+        exclude_methods: tuple[type[TelegramMethod[Any]]] = (AnswerCallbackQuery,),
     ) -> None:
         self.backoff_config = backoff_config
         self.max_retries = max_retries
@@ -47,7 +48,11 @@ class RetryRequestMiddleware(BaseRequestMiddleware):
     ) -> Response[TelegramType]:
         backoff: Backoff = Backoff(config=self.backoff_config)
         retries: int = 0
-        max_retries: int = method.model_extra.get("_max_retries", self.max_retries)
+        max_retries: int = (
+            method.model_extra.get("_max_retries", self.max_retries)
+            if method.model_extra is not None
+            else self.max_retries
+        )
 
         while True:
             retries += 1
