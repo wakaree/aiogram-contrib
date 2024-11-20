@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from math import ceil
 from typing import Callable, Optional
 
@@ -20,7 +20,7 @@ class Paginator:
     right_button_text: str = ">>"
     page_button_text: str = "{}/{}"
     page_button_data: type[CDPagination] = CDPagination
-    stub_callback_data: CallbackData = CDStub()
+    stub_callback_data: CallbackData = field(default_factory=CDStub)
     offset: int = 0
     total_count: int = 0
     rows_per_page: int = 10
