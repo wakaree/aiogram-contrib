@@ -26,6 +26,7 @@ async def stub_handler(query: CallbackQuery) -> Any:
 
 @dataclass
 class PaginationFactory(BaseMiddleware):
+    paginator_cls: type[Paginator] = Paginator
     left_button_text: MaybeMagic[str] = "<<"
     right_button_text: MaybeMagic[str] = ">>"
     page_button_text: MaybeMagic[str] = "{}/{}"
@@ -47,7 +48,7 @@ class PaginationFactory(BaseMiddleware):
     ) -> Any:
         callback_data: Optional[CallbackData] = data.get("callback_data")
         attr_data: AttrDict[str, Any] = AttrDict(data)
-        data["paginator"] = Paginator(
+        data["paginator"] = self.paginator_cls(
             left_button_text=resolve(self.left_button_text, attr_data),
             right_button_text=resolve(self.right_button_text, attr_data),
             page_button_text=resolve(self.page_button_text, attr_data),
