@@ -38,7 +38,7 @@ class PaginationFactory(BaseMiddleware):
     def register(self, router: Router, *event_types: str) -> None:
         for event_type in event_types:
             router.observers[event_type].middleware(self)
-        router.callback_query.register(self.stub_callback_data.filter(), stub_handler)
+        router.callback_query.register(stub_handler, self.stub_callback_data.filter())
 
     async def __call__(
         self,
