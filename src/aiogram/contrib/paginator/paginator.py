@@ -53,6 +53,7 @@ class Paginator:
         button_getter: Callable[[T], InlineKeyboardButton],
         menu_type: str,
         attach: Optional[InlineKeyboardBuilder] = None,
+        attach_above_arrows: Optional[InlineKeyboardBuilder] = None,
         row_size: Optional[int] = None,
         pagination_button_data: Optional[type[CDPagination]] = None,
     ) -> InlineKeyboardMarkup:
@@ -94,6 +95,8 @@ class Paginator:
         objects_builder.adjust(row_size or self.default_row_size, repeat=True)
         pagination_builder.adjust(3)
         summarized_builder.attach(objects_builder)
+        if attach_above_arrows is not None:
+            summarized_builder.attach(attach_above_arrows)
         summarized_builder.attach(pagination_builder)
         if attach is not None:
             summarized_builder.attach(attach)
